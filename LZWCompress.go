@@ -11,11 +11,13 @@ package lzwcompress
 // Returns:
 // List containing the bytes (16-bit) to which input data has been encoded
 func Compress(data string) []uint16 {
+	// Build the initial dictionary with all 8-bit ASCII characters
 	const size uint16 = 256 
 	dict := make(map[string]uint16)
 	for i := range size {
 		dict[string(rune(i))] = i
 	}
+	// Add EOF character
 	dict["EOF"] = size + 1
 	idx := size + 1
 
@@ -49,17 +51,19 @@ func Compress(data string) []uint16 {
 // Returns:
 // Original string decoded
 func Decompress(data []uint16) string {
+	// Build the initial dictionary with all 8-bit ASCII characters
 	const size uint16 = 256
 	dict := make(map[uint16]string)
 	for i := range size {
 		dict[i] = string(rune(i))
 	}
+	// Add EOF character
 	dict[size] = "EOF"
 	idx := size + 1
 	
-	cadena := string(rune(data[0]))
+	cadena := string(rune(data[0])) // Start with first element of data
 	decomp := cadena
-	pop_data := append(data[:0], data[1:]...)
+	pop_data := append(data[:0], data[1:]...) // Remove first element of data in order to process it only 1 time
 	for _, d := range pop_data {
 		subpalabra := ""
 		val, ok := dict[uint16(d)]
